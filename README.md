@@ -2,6 +2,7 @@
 ====
 
 マーカーを利用したスキャン文書の自動傾き補正を行う。
+
 Do automatic slant correction for the scanned document which has printed markers.
 
 ## 説明
@@ -19,5 +20,3 @@ MIT License (Copyright 2016 nixeneko)
 
 [nixeneko](https://github.com/nixeneko)
 
-
-http://gist-it.appspot.com/http://github.com/nixeneko/slantcorrection/blob/master/slantcorrection.py
