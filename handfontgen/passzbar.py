@@ -17,7 +17,7 @@ def passzbar(image):
     if retval == False:
         raise ValueError('The Given image could not be converted to BMP binary data')
     # convert buf from numpy.ndarray to bytes
-    binbmp = buf.tobytes()
+    binbmp = buf.tostring()
     optionargs = []
     
     args = [
