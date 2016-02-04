@@ -172,7 +172,7 @@ def generatefont(dest, metadata, glyphdir):
 
     # make output directory if not exists
     outdir = os.path.dirname(dest)
-    if not os.path.isdir(outdir):
+    if outdir == '' or not os.path.isdir(outdir):
         os.makedirs(outdir)
         
     # list up svg files
