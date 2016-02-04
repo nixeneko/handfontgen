@@ -4,10 +4,13 @@
 
 import sys
 import codecs
+import os
 
 import tilecharbox
 
-TEMPLATEFILE = "../resources/charbox_template_5-8-5.svg"
+TEMPLATEFILEREL = "../resources/charbox_template_5-8-5.svg"
+pathbase = os.path.dirname(os.path.abspath(__file__))
+TEMPLATEFILE = os.path.normpath(os.path.join(pathbase, TEMPLATEFILEREL))
 
 def main(argv):
     argc = len(argv)

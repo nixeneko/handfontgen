@@ -25,8 +25,8 @@ def main(argv):
     sources = argv[2:]
     
     #this metadata should be indivisual setting file like .ini or xml? 
-    # metadata = generatefontfromsvg.FontMetaData.fromsvgfile(filename)
-    metadata = generatefontfromsvg.FontMetaData(
+    # metadata = fontgenfromsvg.FontMetaData.fromsvgfile(filename)
+    metadata = fontgenfromsvg.FontMetaData(
             fontname="TekitounaTegakiFont", 
             family="TekitounaTegakiFont", 
             fullname="TekitounaTegakiFont", 
@@ -44,7 +44,7 @@ def main(argv):
         #make svg files from scanned forms
         scanchars.addfiles(sources, svgdir) 
         #generate opentype font
-        generatefontfromsvg.generatefont(destfile, metadata, svgdir)
+        fontgenfromsvg.generatefont(destfile, metadata, svgdir)
     except:
         shutil.rmtree(svgdir)
         raise

@@ -16,11 +16,18 @@ import passpotrace
 
 DOCSIZE = (191.7, 278.7)
 
-MARKER_TL = cv2.imread('resources/marker_tl.png', cv2.IMREAD_GRAYSCALE)
-MARKER_BR = cv2.imread('resources/marker_br.png', cv2.IMREAD_GRAYSCALE)
+MARKER_TL_RELPATH = '../resources/marker_tl.png'
+MARKER_BR_RELPATH = '../resources/marker_br.png'
 MARKER_SIZE = 3 #[mm]
-
 SIZE_THRESH_MM = 2 #[mm] marker size threshold for splitting image 
+
+pathbase = os.path.dirname(os.path.abspath(__file__))
+markertlpath = os.path.normpath(os.path.join(pathbase, MARKER_TL_RELPATH))
+markerbrpath = os.path.normpath(os.path.join(pathbase, MARKER_BR_RELPATH))
+
+MARKER_TL = cv2.imread(markertlpath, cv2.IMREAD_GRAYSCALE)
+MARKER_BR = cv2.imread(markerbrpath, cv2.IMREAD_GRAYSCALE)
+
 
 def makeupright(image):
     #binarize image

@@ -6,13 +6,17 @@ import numpy as np
 import cv2
 import copy
 import random
+import os
 
 from util import getgrayimage
 
-MARKER = cv2.imread('../resources/marker_150.png', cv2.IMREAD_GRAYSCALE)
+MARKER_REL = '../resources/marker_150.png'
 A4WIDTH_MM = 210
 DOCSIZE = (191.7, 278.7)
 
+pathbase = os.path.dirname(os.path.abspath(__file__))
+markerpath = os.path.normpath(os.path.join(pathbase, MARKER_REL))
+MARKER = cv2.imread(markerpath, cv2.IMREAD_GRAYSCALE)
 #dpi = 300 
 #dpm = dpi / 25.4
 #DOCPXLS = (int(DOCSIZE[0]*dpm),int(DOCSIZE[1]*dpm))
@@ -122,10 +126,13 @@ def correctslant(image):
     return straightened
     
 def main():
-    testpic = cv2.imread('../sampledata/test1_300dpi.jpg')
+    testpicrelpath = '../sampledata/test1_300dpi.jpg'
+    testpicpath = os.path.normpath(os.path.join(pathbase, testpicrelpath))
+    testpic = cv2.imread(testpicpath)
     
     result = correctslant(testpic)
     cv2.imshow('result', result)
+    #cv2.imwrite('corrected.jpg', result)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 

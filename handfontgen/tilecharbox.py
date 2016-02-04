@@ -9,13 +9,18 @@ import re, codecs, math
 import copy
 #import random
 import io
+import os
 import base64
 import qrcode
 import cairosvg
 import PyPDF2
 
-TEMPLATEFILE = '../resources/charbox_template_5-8-5.svg'
-PAPERTEMPLATE = '../resources/a4paper_marker.svg'
+TEMPLATEFILEREL = '../resources/charbox_template_5-8-5.svg'
+PAPERTEMPLATEREL = '../resources/a4paper_marker.svg'
+
+pathbase = os.path.dirname(os.path.abspath(__file__))
+TEMPLATEFILE = os.path.normpath(os.path.join(pathbase, TEMPLATEFILEREL))
+PAPERTEMPLATE = os.path.normpath(os.path.join(pathbase, PAPERTEMPLATEREL))
 
 A4WIDTH_MM = 210
 
