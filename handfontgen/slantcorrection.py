@@ -9,7 +9,7 @@ import random
 
 from util import getgrayimage
 
-MARKER = cv2.imread('resources/marker_150.png', cv2.IMREAD_GRAYSCALE)
+MARKER = cv2.imread('../resources/marker_150.png', cv2.IMREAD_GRAYSCALE)
 A4WIDTH_MM = 210
 DOCSIZE = (191.7, 278.7)
 

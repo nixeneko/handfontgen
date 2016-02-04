@@ -14,10 +14,9 @@ import qrcode
 import cairosvg
 import PyPDF2
 
-TEMPLATEFILE = 'resources/charbox_template_5-8-5.svg'
-PAPERTEMPLATE = 'resources/a4paper_marker.svg'
+TEMPLATEFILE = '../resources/charbox_template_5-8-5.svg'
+PAPERTEMPLATE = '../resources/a4paper_marker.svg'
 
-DESTFILE = 'test.pdf'
 A4WIDTH_MM = 210
 
 class Rect():
@@ -301,7 +300,7 @@ def main():
     listchar = list("あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよわゐゑをんぁぃぅぇぉがぎぐげござじずぜぞだぢづでどっばびぶべぼぱぴぷぺぽゃゅょ")
     t = TemplateTiler()
     t.loadtiletemplate(TEMPLATEFILE)
-    t.outputpapertemplate(DESTFILE, listchar)
+    t.outputpapertemplate('test.pdf', listchar)
     
             
 if __name__ == '__main__':

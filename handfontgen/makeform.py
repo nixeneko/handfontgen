@@ -7,7 +7,7 @@ import codecs
 
 import tilecharbox
 
-TEMPLATEFILE = "resources/charbox_template_5-8-5.svg"
+TEMPLATEFILE = "../resources/charbox_template_5-8-5.svg"
 
 def main(argv):
     argc = len(argv)
