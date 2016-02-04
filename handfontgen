@@ -7,21 +7,15 @@ import cv2
 import copy
 import random
 
+from util import getgrayimage
+
 MARKER = cv2.imread('resources/marker_150.png', cv2.IMREAD_GRAYSCALE)
+A4WIDTH_MM = 210
 DOCSIZE = (191.7, 278.7)
-dpi = 100 
-dpm = dpi / 25.4
-DOCPXLS = (int(DOCSIZE[0]*dpm),int(DOCSIZE[1]*dpm))
 
-
-def getgrayimage(image):
-    # if image is not grayscale, convert to grayscale
-    # this can cause error in some cases?
-    if image.ndim == 2:
-        grayscale = image
-    else:
-        grayscale = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    return grayscale
+#dpi = 300 
+#dpm = dpi / 25.4
+#DOCPXLS = (int(DOCSIZE[0]*dpm),int(DOCSIZE[1]*dpm))
         
 def getapproxmarkerradius(image):
     return int(min(image.shape[0:2]) * 0.03 /2)
@@ -108,26 +102,29 @@ def sortrectpoints(posarray):
     #print(retpointlist)
     return retpointlist
     
-def transform(image, rectpoints):
-    docrect = np.array([(0,0), (DOCPXLS[0], 0), (DOCPXLS[0], DOCPXLS[1]), (0, DOCPXLS[1])], 'float32')
+def transform(image, rectpoints, dpmm):
+    docpxls = (int(DOCSIZE[0]*dpmm),int(DOCSIZE[1]*dpmm))
+    docrect = np.array(
+                [(0,0), (docpxls[0], 0), (docpxls[0], docpxls[1]), (0, docpxls[1])],
+                'float32')
     transmat = cv2.getPerspectiveTransform(np.array(rectpoints, 'float32'), docrect)
-    return cv2.warpPerspective(image, transmat, DOCPXLS)
+    return cv2.warpPerspective(image, transmat, docpxls)
 
 def correctslant(image):
     #mkradius = getapproxmarkerradius(testpic) # approximate marker radius
+    dpmm = min(image.shape[0:2]) / A4WIDTH_MM # dot per mm
     matchedposarray = detectmarker(image)
     rectpoints = []
     for pos in matchedposarray:
         rectpoints.append(getmarkercenter(image, pos))
     rect = sortrectpoints(rectpoints)
-    straightened = transform(image, rect)
+    straightened = transform(image, rect, dpmm)
     return straightened
     
 def main():
-    testpic = cv2.imread('resources/test1_300dpi.jpg')
+    testpic = cv2.imread('../sampledata/test1_300dpi.jpg')
     
     result = correctslant(testpic)
-    
     cv2.imshow('result', result)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
