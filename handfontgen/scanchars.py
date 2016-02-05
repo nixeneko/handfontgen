@@ -7,6 +7,7 @@ import cv2
 import sys, os
 #import copy
 #import random
+import glob
 
 import slantcorrection
 import passzbar
@@ -92,12 +93,14 @@ def splitimage(image):
     
 def detectresol(img):
     typ, val = passzbar.passzbar(img)
-    if not typ:
-        raise RuntimeError("QR Code cannot be detected")
-    x, y = val.decode('ascii').strip().split(',')
-    xlst = x.split(':')
-    ylst = y.split(':')
-    return [list(map(int, xlst)), list(map(int, ylst))]
+    if typ:
+        x, y = val.decode('ascii').strip().split(',')
+        xlst = x.split(':')
+        ylst = y.split(':')
+        return [list(map(int, xlst)), list(map(int, ylst))]
+    else:
+        #raise RuntimeError("QR Code cannot be detected")
+        return None
 
 def getmarkerboundingrect(img, mkpos, mksize):
     buffer = int(mksize * 0.15)
@@ -125,6 +128,8 @@ def getcroppedarea(img, markersize):
     
     #detect QR code
     typ, val = passzbar.passzbar(img)
+    if not typ:
+        return None, None
     strval = val.decode('ascii').strip()
     #print(strval)
     
@@ -168,13 +173,18 @@ def saveasfile(outdir, name, bsvg):
 def scanchars(img, outdir):
     wholeimage = slantcorrection.correctslant(img)
     markersize = getapproxmarkersize(wholeimage)
-    
+        
     #dpmm = min(img.shape[0:2]) / DOCSIZE[0]
     imgs = splitimage(wholeimage)
     resol = detectresol(imgs.pop())
+    if resol == None:
+        print('QR Code for the page cannot be detected. skipping the image')
+        return
         
     for im in imgs:
         name, croppedimg = getcroppedarea(im, markersize)
+        if name == None:
+            continue
         grayimg = getgrayimage(croppedimg)
         ret, binimg = cv2.threshold(grayimg,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
         print(name, end=" ")
@@ -202,7 +212,7 @@ def scanchars(img, outdir):
     print("")
 
 # files that cv2.imread can read.
-def getimreadimg(pathdir):
+def getreadableimgfile(pathdir):
     return    glob.glob(os.path.join(pathdir, "*.bmp")) \
             + glob.glob(os.path.join(pathdir, "*.dib")) \
             + glob.glob(os.path.join(pathdir, "*.jpeg")) \
@@ -223,7 +233,7 @@ def addfiles(lstfile, dstdir):
     
     for path in lstfile:
         if os.path.isdir(path): # if folder
-            addfiles(getimreadimg(path))
+            addfiles(getreadableimgfile(path), dstdir)
         elif os.path.isfile(path):
             #convert image
             print("Processing {}:".format(path))

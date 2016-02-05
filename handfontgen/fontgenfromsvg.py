@@ -50,7 +50,10 @@ class SVGGlyph():
     def __init__(self, name, width, path):
         self.name = name
         if self.RE_HEX.match(name):
-            self.uname = "u" + name
+            if 2 <= len(name) < 4:
+                self.uname = "u" + "0" * (4 - len(name)) + name
+            else:
+                self.uname = "u" + name
         else:
             self.uname = name
         self.width = int(width)
@@ -195,7 +198,7 @@ def generatefont(dest, metadata, glyphdir):
         
     # import svgs, and generate font using fontforge
     script = generateffscript(dest, metadata, lstglyph, charset)
-    #print(script
+    #print(script)
     #with codecs.open('script.pe', 'w', 'utf-8') as w:
     #    w.write(script)
     passfontforge(script)
