@@ -236,7 +236,7 @@ class TemplateTiler:
                         texttag.set("y", str(posy + self.textpos[1]))
                         xmlroot.append(texttag)
                         
-                        qrstr = "{:4X}".format(ord(c))
+                        qrstr = "{:04X}".format(ord(c))
                         qrrect = self.rectqrarea.addoffset((posx, posy))
                         imagetag = self._getqrtag(qrstr, qrrect)
                         xmlroot.append(imagetag)
@@ -293,6 +293,10 @@ class TemplateTiler:
         #    w.write(bstrxml)
 
     def outputpapertemplate(self, dest, listchar):
+        destdir = os.path.dirname(dest)
+        if destdir != '' and not os.path.isdir(destdir):
+            os.makedirs(destdir)
+            
         output = PyPDF2.PdfFileWriter()
         while listchar:
             iopage = self.outputtemplateonepage(listchar)
