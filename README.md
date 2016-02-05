@@ -1,16 +1,25 @@
-傾き補正プログラム
+handfontgen: Handwriting Font Generator
 ====
 
-マーカーを利用したスキャン文書の自動傾き補正を行う。
+専用のフォームに書いた手書き文字をフォントに変換する。
 
-Do automatic slant correction for the scanned document which has printed markers.
+Generate a font by converting from characters written on a special form.
 
 ## 説明
 http://nixeneko.hatenablog.com/entry/2016/01/21/163937
 
 ## Requirements
+- Python (equal or greater than version 3.4)
+- Fontforge
+- Potrace
+- ZBar
+- Cairo
+- NumPy
+- OpenCV-Python (version 3)
+- CairoSVG
+- PyPDF2
+- python-qrcode
 
-Python 3, OpenCV 3
 
 ## Licence
 
