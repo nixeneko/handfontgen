@@ -7,6 +7,7 @@ import cv2
 import copy
 import random
 import os
+import math
 
 from util import getgrayimage
 
@@ -71,13 +72,16 @@ def sortrectpoints(posarray):
     for p in posarraytmp:
         dx = p[0] - p0[0]
         dy = p[1] - p0[1]
-        angle = abs(dy)/(abs(dx)+abs(dy)) * 90
+        #angle = abs(dy)/(abs(dx)+abs(dy)) * 90
+        angle = math.atan2(dy, dx)
         pts_angle.append((angle, p))
-        
+    
+    #print("pts_angle: ", pts_angle)
     pts_angle_sorted = sorted(pts_angle, key=lambda x:x[0])
     pointclockwise = [p0]
     pointclockwise.extend([x[1] for x in pts_angle_sorted])
-    #print(pointclockwise)
+    
+    #print("pointclockwise: ", pointclockwise)
     
     # detect short sides
     lenarray = []
@@ -92,6 +96,8 @@ def sortrectpoints(posarray):
     # longsides = [x[0] for x in sortedlen[2:4]]
     # diagonals = [x[0] for x in sotedlen[4:6]]
     
+    #print("shortsides: ", shortsides)
+    
     # select a shortside of which midpoint has smaller y position
     def getmidpointy(parray): # y position of midpoint
         return (parray[0][1] + parray[1][1]) / 2
@@ -103,7 +109,7 @@ def sortrectpoints(posarray):
         if pointclockwise[i] in shorttop and pointclockwise[(i+1)%4] in shorttop:
             retpointlist = pointclockwise[i:] + pointclockwise[:i]
             break
-    #print(retpointlist)
+    #print("retopintlist: ", retpointlist)
     return retpointlist
     
 def transform(image, rectpoints, dpmm):
@@ -127,6 +133,7 @@ def correctslant(image):
     
 def main():
     testpicrelpath = '../sampledata/test1_300dpi.jpg'
+    #testpicrelpath = '../sampledata/scanned_300dpi/hankaku_01.jpg'
     testpicpath = os.path.normpath(os.path.join(pathbase, testpicrelpath))
     testpic = cv2.imread(testpicpath)
     
