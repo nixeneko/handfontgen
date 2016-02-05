@@ -4,7 +4,7 @@
 <svg version="1.1" id="layer_x5F_charbox" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
 	 y="0px" width="595.28px" height="841.89px" viewBox="0 0 595.28 841.89" style="enable-background:new 0 0 595.28 841.89;"
 	 xml:space="preserve">
-<g id="tilebox">
+<g id="tilegroup">
 	<rect id="tilearea" x="0" style="fill:#FFFFFF;" width="56.693" height="87.875"/>
 	
 		<rect id="scanarea" x="8.504" y="8.504" style="fill:none;stroke:#FFFFFF;stroke-width:0.2835;stroke-miterlimit:10;" width="39.685" height="51.023"/>
@@ -14,7 +14,7 @@
 	<polygon id="marker_x5F_rl" points="49.133,68.032 48.189,68.032 48.189,59.528 56.693,59.528 56.693,60.472 49.133,60.472 	"/>
 	<rect x="31.181" y="65.198" style="fill:none;" width="10.667" height="10.667"/>
 	
-		<text id="text_x5F_place" transform="matrix(1 0 0 1 31.1812 73.998)" style="font-family:'KozGoPr6N-Regular-90ms-RKSJ-H'; font-size:10;">*</text>
-	<rect id="qr_x5F_place" x="0" y="59.528" style="fill:#FFFFFF;" width="28.347" height="28.347"/>
+		<text id="textplace" transform="matrix(1 0 0 1 31.1812 73.998)" style="font-family:'KozGoPr6N-Regular-90ms-RKSJ-H'; font-size:10;">*</text>
+	<rect id="qrarea" x="0" y="59.528" style="fill:#FFFFFF;" width="28.347" height="28.347"/>
 </g>
 </svg>
