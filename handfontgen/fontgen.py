@@ -6,6 +6,7 @@ import sys
 import tempfile
 import shutil
 import os
+import argparse
 
 #from util import getgrayimage
 import util
@@ -13,31 +14,7 @@ import util
 import scanchars
 import fontgenfromsvg
 
-
-def main(argv):
-    if len(argv) < 3:
-        print("Usage: %s dest.otf pic_src [pic_src ...]\n"%argv[0]
-            +"       source.txt is a text file which conains chars you want to make form into.\n"
-            +"       dest.pdf is a path for a output pdf file.")
-        quit()
-    
-    destfile = argv[1]
-    sources = argv[2:]
-    
-    #this metadata should be indivisual setting file like .ini or xml? 
-    # metadata = fontgenfromsvg.FontMetaData.fromsvgfile(filename)
-    metadata = fontgenfromsvg.FontMetaData(
-            fontname="TekitounaTegakiFont", 
-            family="TekitounaTegakiFont", 
-            fullname="TekitounaTegakiFont", 
-            weight="Regular", 
-            copyrightnotice="(c) nixeneko 2016 http://nixeneko.hatenablog.com , generated with FontForge", 
-            fontversion="1.00", 
-            familyJP="適当な手書きフォント",
-            fullnameJP="適当な手書きフォント",
-            ascent=860,
-            descent=140
-            )
+def fontgen(destfile, metadata, sources):
     svgdir = tempfile.mkdtemp() #tempdir
     
     try:
@@ -53,4 +30,32 @@ def main(argv):
             shutil.rmtree(svgdir)
 
 if __name__ == '__main__':
-    main(sys.argv)
+    parser = argparse.ArgumentParser(description='Generate a font from scanned pictures of a special form.')
+    parser.add_argument('dest', metavar='dest.otf', 
+                    help='a path for a output font file')
+    parser.add_argument('-m', metavar='metadata.xml', dest='metadata',
+                    help='XML files that contains font meta data')
+    parser.add_argument('srcs', metavar='src', nargs='+',
+                    help='images or directories that contains scanned images of a special form')
+    
+
+    args = parser.parse_args()
+
+    if args.metadata:
+        metadata = fontgenfromsvg.FontMetaData.fromxmlfile(args.metadata)
+    else:
+        metadata = fontgenfromsvg.FontMetaData(
+            fontname="TekitounaTegakiFont", 
+            family="TekitounaTegakiFont", 
+            fullname="TekitounaTegakiFont", 
+            weight="Regular", 
+            copyrightnotice="", 
+            fontversion="0.01", 
+            familyJP="適当な手書きフォント",
+            fullnameJP="適当な手書きフォント",
+            ascent=860,
+            descent=140
+            )
+    
+    fontgen(args.dest, metadata, args.srcs)
+    

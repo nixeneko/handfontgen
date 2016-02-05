@@ -13,6 +13,7 @@ from xml.etree import ElementTree
 import subprocess
 import sys
 import codecs
+import argparse
 
 #from util import getgrayimage
 import util
@@ -24,6 +25,10 @@ GLYPHFILE = "*.svg"
 
 CYGWINFLG = util.checkcygwin()
 CYGPATHFLG = True       # set True when using Cygwin Fontforge
+
+# for debugging
+SCRIPT_WRITE_FILE_FLG = False
+SCRIPT_FILENAME = 'script.pe'
 
 class FontMetaData():
     def __init__(self, fontname="", family="", fullname="", 
@@ -41,9 +46,20 @@ class FontMetaData():
         self.ascent = ascent
         self.descent = descent
         
-    def fromsvgfile(self, filename):
-        #TODO
-        return FontMetaData()
+    def fromxmlfile(filename):
+        xmltree = ElementTree.parse(filename)
+        xmlroot = xmltree.getroot()
+        
+        ddict = {}
+        for data in xmlroot:
+            ddict[data.tag] = data.text
+        
+        if 'ascent' in ddict:
+            ddict['ascent'] = int(ddict['ascent'])
+        if 'descent' in ddict:
+            ddict['descent'] = int(ddict['descent'])
+        
+        return FontMetaData(**ddict)
 
 class SVGGlyph():
     RE_HEX = re.compile("""^[0-9A-Z]+$""", re.IGNORECASE)
@@ -198,27 +214,38 @@ def generatefont(dest, metadata, glyphdir):
         
     # import svgs, and generate font using fontforge
     script = generateffscript(dest, metadata, lstglyph, charset)
-    #print(script)
-    #with codecs.open('script.pe', 'w', 'utf-8') as w:
-    #    w.write(script)
+    if SCRIPT_WRITE_FILE_FLG:
+        with codecs.open(SCRIPT_FILENAME, 'w', 'utf-8') as w:
+            w.write(script)
     passfontforge(script)
     
-def main():
-    glyphdir = "glyphs"
-    destfile = "tekitou.otf"
-    metadata = FontMetaData(
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Generate a font from SVG files.')
+    parser.add_argument('dest', metavar='dest.otf', 
+                    help='output pdf file')
+    parser.add_argument('srcdir', 
+                    help='directory that contains character SVG files')
+    parser.add_argument('metadata', nargs='?',
+                    help='XML files that contains font meta data')
+
+    args = parser.parse_args()
+
+    if args.metadata:
+        metadata = FontMetaData.fromxmlfile(args.metadata)
+    else:
+        metadata = FontMetaData(
             fontname="TekitounaTegakiFont", 
             family="TekitounaTegakiFont", 
             fullname="TekitounaTegakiFont", 
             weight="Regular", 
-            copyrightnotice="(c) nixeneko 2016 http://nixeneko.hatenablog.com , generated with FontForge", 
-            fontversion="1.00", 
+            copyrightnotice="generated with FontForge", 
+            fontversion="0.01", 
             familyJP="適当な手書きフォント",
             fullnameJP="適当な手書きフォント",
             ascent=860,
             descent=140
             )
-    generatefont(destfile, metadata, glyphdir)
-
-if __name__ == '__main__':
-    main()
+    
+    generatefont(args.dest, metadata, args.srcdir)
+    
