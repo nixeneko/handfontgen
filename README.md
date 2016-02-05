@@ -9,7 +9,7 @@ Generate a font by converting from characters written on a special form.
 http://nixeneko.hatenablog.com/entry/2016/01/21/163937
 
 ## Requirements
-- Python (equal or greater than version 3.4)
+- Python (version >= 3.4)
 - Fontforge
 - Potrace
 - ZBar
