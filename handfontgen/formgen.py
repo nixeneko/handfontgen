@@ -31,19 +31,23 @@ def formgen(dest, template, files):
     t.loadtiletemplate(template)
     t.outputpapertemplate(dest, lstchar)
     
-def hanzentxt2pdfform(hankakutxt, zenkakutxt):
+def hanzentxt2pdfform(hankakutxt, zenkakutxt, ioout=None):
     hankakutemp = "../resources/charbox_template_5-8-5_5-4-5.svg"
     zenkakutemp = "../resources/charbox_template_5-8-5.svg"
     lsthankaku = remdup(list(hankakutxt.replace(" ", "").replace("\n", "").replace("\r", "")))
     lstzenkaku = remdup(list(zenkakutxt.replace(" ", "").replace("\n", "").replace("\r", "")))
 
-    iobin = io.BytesIO()
+    if ioout == None:
+        iobin = io.BytesIO()
+    else:
+        iobin = ioout
     t = tilecharbox.TemplateTiler()
     t.loadtiletemplate(os.path.normpath(os.path.join(pathbase, hankakutemp)))
     pdfw = t.outputpapertemplate(None, lsthankaku)
     t.loadtiletemplate(os.path.normpath(os.path.join(pathbase, zenkakutemp)))
     t.outputpapertemplate(iobin, lstzenkaku, output=pdfw)
-    return iobin.getvalue()
+    if ioout == None:
+        return iobin.getvalue()
             
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate a form on which characters to be written.')
