@@ -8,6 +8,7 @@ import sys, os
 #import copy
 #import random
 import glob
+import argparse
 
 import slantcorrection
 import passzbar
@@ -122,17 +123,9 @@ def getmarkerboundingrect(img, mkpos, mksize):
                         stats[imax, cv2.CC_STAT_WIDTH], 
                         stats[imax, cv2.CC_STAT_HEIGHT])
     return boundingrect.addoffset((x,y))
-    
+
 def getcroppedarea(img, markersize):
     #use template matching to detect area to be cropped
-    
-    #detect QR code
-    typ, val = passzbar.passzbar(img)
-    if not typ:
-        return None, None
-    strval = val.decode('ascii').strip()
-    #print(strval)
-    
     grayimg = getgrayimage(img)
     # detect top-left marker using template matching
     marker_tl = cv2.resize(MARKER_TL, (markersize, markersize))
@@ -142,6 +135,7 @@ def getcroppedarea(img, markersize):
     mkrect = getmarkerboundingrect(grayimg, maxloc, markersize)
     pos_tl = (mkrect.x+mkrect.w, mkrect.y+mkrect.h)
     #pos_tl = (maxloc[0]+markersize, maxloc[1]+markersize)
+    
     # detect bottom-right marker using template matching
     marker_br = cv2.resize(MARKER_BR, (markersize, markersize))
     matched = cv2.matchTemplate(grayimg, marker_br, cv2.TM_CCORR_NORMED) #returns float32
@@ -150,6 +144,15 @@ def getcroppedarea(img, markersize):
     mkrect = getmarkerboundingrect(grayimg, maxloc, markersize)
     pos_br = (mkrect.x, mkrect.y)
     #pos_br = maxloc
+
+    #detect QR code
+    qrarea = img[pos_br[1]:,:img.shape[0]-pos_br[1]]
+    typ, val = passzbar.passzbar(qrarea)
+    
+    if not typ:
+        return None, None
+    strval = val.decode('ascii').strip()
+    #print(strval)
     
     #cv2.circle(img, pos_tl, 5, (255, 0, 0), -1)
     #cv2.circle(img, pos_br, 5, (0, 255, 0), -1)
@@ -242,19 +245,16 @@ def addfiles(lstfile, dstdir):
         else:
             print("{}: File not found!".format(path))
         
-        
-def main(argv):
-    if len(argv) < 1:
-        print("Picture file needed")
-        quit()
-    
-    outdir = "glyphs"
-    #scanchars(testpic, funcsave)
-    addfiles(argv, outdir)
-    
-    #cv2.imshow('result', imgs[7*7])
-    #cv2.waitKey(0)
-    #cv2.destroyAllWindows()
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    parser = argparse.ArgumentParser(description='Generate SVG files from scanned image of a special form.')
+    parser.add_argument('dest', metavar='destdir', 
+                    help='output directory where SVG files will be stored')
+    parser.add_argument('srcs', metavar='src', nargs='+',
+                    help='images or directories that contains scanned images of a special form')
+
+    args = parser.parse_args()
+
+    addfiles(args.srcs, args.dest)
+    
+    
