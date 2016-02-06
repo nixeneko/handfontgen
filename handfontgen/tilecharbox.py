@@ -292,18 +292,26 @@ class TemplateTiler:
         #    w.write(strdeclaration.replace("iso-8859-1","utf-8").encode('utf-8'))
         #    w.write(bstrxml)
 
-    def outputpapertemplate(self, dest, listchar):
-        destdir = os.path.dirname(dest)
-        if destdir != '' and not os.path.isdir(destdir):
-            os.makedirs(destdir)
-            
-        output = PyPDF2.PdfFileWriter()
+    def outputpapertemplate(self, dest, listchar, output=None):
+        if output == None:
+            output = PyPDF2.PdfFileWriter()
+
         while listchar:
             iopage = self.outputtemplateonepage(listchar)
             page = PyPDF2.PdfFileReader(iopage)
             output.addPage(page.getPage(0))
-        with open(dest, "wb") as w:
-            output.write(w)
+            
+        if dest != None:
+            if isinstance(dest, str): # when dest is a file path
+                destdir = os.path.dirname(dest)
+                if destdir != '' and not os.path.isdir(destdir):
+                    os.makedirs(destdir)
+                with open(dest, "wb") as w:
+                    output.write(w)
+            else: # when dest is io.IOBase
+                output.write(dest)
+        else:
+            return output
         
 def main():
     listchar = list("あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよわゐゑをんぁぃぅぇぉがぎぐげござじずぜぞだぢづでどっばびぶべぼぱぴぷぺぽゃゅょ")
