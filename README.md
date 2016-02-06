@@ -6,7 +6,7 @@ handfontgen: Handwriting Font Generator
 Generate a font by converting from characters written on a special form.
 
 ## 説明
-http://nixeneko.hatenablog.com/entry/2016/01/21/163937
+http://nixeneko.hatenablog.com/entry/2016/02/06/114348
 
 ## Requirements
 - Python (version >= 3.4)
