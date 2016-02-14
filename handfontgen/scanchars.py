@@ -173,7 +173,7 @@ def saveasfile(outdir, name, bsvg):
     with open(outpath, "wb") as w:
         w.write(bsvg)
     
-def scanchars(img, outdir):
+def scanchars(img, outdir, verbose=True):
     wholeimage = slantcorrection.correctslant(img)
     markersize = getapproxmarkersize(wholeimage)
         
@@ -181,7 +181,8 @@ def scanchars(img, outdir):
     imgs = splitimage(wholeimage)
     resol = detectresol(imgs.pop())
     if resol == None:
-        print('QR Code for the page cannot be detected. skipping the image')
+        if verbose:
+            print('QR Code for the page cannot be detected. skipping the image')
         return
         
     for im in imgs:
@@ -190,7 +191,8 @@ def scanchars(img, outdir):
             continue
         grayimg = getgrayimage(croppedimg)
         ret, binimg = cv2.threshold(grayimg,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-        print(name, end=" ")
+        if verbose:
+            print(name, end=" ")
         sys.stdout.flush()
         #cv2.imwrite("chr/"+name+".jpg", croppedimg)
         imgheight = 1000
@@ -210,9 +212,12 @@ def scanchars(img, outdir):
         bsvg = bsvg.replace(b"pt", b"px") # any exceptions?
         
         #save function
+        if outdir != '' and not os.path.isdir(outdir):
+            os.makedirs(outdir)
         saveasfile(outdir, name, bsvg)
         #break
-    print("")
+    if verbose:
+        print("")
 
 # files that cv2.imread can read.
 def getreadableimgfile(pathdir):
@@ -231,19 +236,25 @@ def getreadableimgfile(pathdir):
             + glob.glob(os.path.join(pathdir, "*.tiff")) \
             + glob.glob(os.path.join(pathdir, "*.tif"))
 
-def addfiles(lstfile, dstdir):
+def addfiles(lstfile, dstdir, verbose=True):
     #funcsave = lambda name, bsvg: saveasfile(dstdir, name, bsvg)
-    
-    for path in lstfile:
+    def _processonefile(path):
         if os.path.isdir(path): # if folder
-            addfiles(getreadableimgfile(path), dstdir)
+            addfiles(getreadableimgfile(path), dstdir, verbose)
         elif os.path.isfile(path):
             #convert image
-            print("Processing {}:".format(path))
+            if verbose:
+                print("Processing {}:".format(path))
             img = cv2.imread(path)
-            scanchars(img, dstdir)
+            scanchars(img, dstdir, verbose)
         else:
             print("{}: File not found!".format(path))
+    if isinstance(lstfile, list):
+        for path in lstfile:
+            _processonefile(path)
+    elif isinstance(lstfile, str):
+        _processonefile(lstfile)
+
         
 
 if __name__ == '__main__':

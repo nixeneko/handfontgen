@@ -150,6 +150,10 @@ def generateffscript(dest, metadata, lstglf, codepoints):
     script += 'SetTTFName(0x411, 1, "{familyJP}");\n'.format(familyJP=metadata.familyJP)
     script += 'SetTTFName(0x411, 4, "{fullnameJP}");\n\n'.format(fullnameJP=metadata.fullnameJP)
 
+    # workaround for cygwin fontforge
+    if CYGWINFLG and CYGPATHFLG and os.path.isabs(dest):
+        dest = util.cygpathconv(util.escapepath(dest))
+    
     script += '# generate OTF file\n'
     script += 'Generate("{destfile}", "", 0x94);\n'.format(destfile=dest)
     script += 'Print("generated: {destfile}");\n\n'.format(destfile=dest)
@@ -159,19 +163,28 @@ def generateffscript(dest, metadata, lstglf, codepoints):
 
     return script
 
-def passfontforge(strscript): #optionargs=[]
+def passfontforge(strscript, verbose=True): #optionargs=[]
     args = [
         FONTFORGE,
         '-lang=ff', '-script', '-'
     ] #+ optionargs
     
-    p = subprocess.Popen(
-        args,
-        stdin=subprocess.PIPE,
-        #stdout=subprocess.PIPE,
-        #stderr=subprocess.PIPE,
-        shell=False
-        )
+    if verbose:
+        p = subprocess.Popen(
+            args,
+            stdin=subprocess.PIPE,
+            #stdout=subprocess.PIPE,
+            #stderr=subprocess.PIPE,
+            shell=False
+            )
+    else:
+        p = subprocess.Popen(
+            args,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=False
+            )
         
     stdout, stderr = p.communicate(input=strscript.encode("utf-8"))
 
@@ -185,7 +198,7 @@ def readsvgwidth(filename):
         raise ValueError("{}: <svg>'s width should be like '1000' or '500.0px'".format(filename))
     return width
     
-def generatefont(dest, metadata, glyphdir):
+def generatefont(dest, metadata, glyphdir, verbose=True):
     if not os.path.isdir(glyphdir):
         raise IOError('glyph directory not found!')
 
@@ -217,7 +230,7 @@ def generatefont(dest, metadata, glyphdir):
     if SCRIPT_WRITE_FILE_FLG:
         with codecs.open(SCRIPT_FILENAME, 'w', 'utf-8') as w:
             w.write(script)
-    passfontforge(script)
+    passfontforge(script, verbose)
     
 
 if __name__ == '__main__':
