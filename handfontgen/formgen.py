@@ -42,14 +42,18 @@ def hanzentxt2pdfform(hankakutxt, zenkakutxt, ioout=None):
     else:
         iobin = ioout
     t = tilecharbox.TemplateTiler()
-    if lsthankaku:
+    if lsthankaku and lstzenkaku:
         t.loadtiletemplate(os.path.normpath(os.path.join(pathbase, hankakutemp)))
         pdfw = t.outputpapertemplate(None, lsthankaku)
-    else:
-        pdfw = None
-    if lstzenkaku:
         t.loadtiletemplate(os.path.normpath(os.path.join(pathbase, zenkakutemp)))
         t.outputpapertemplate(iobin, lstzenkaku, output=pdfw)
+    elif lsthankaku:
+        t.loadtiletemplate(os.path.normpath(os.path.join(pathbase, hankakutemp)))
+        t.outputpapertemplate(iobin, lsthankaku)
+    elif lstzenkaku:
+        t.loadtiletemplate(os.path.normpath(os.path.join(pathbase, zenkakutemp)))
+        t.outputpapertemplate(iobin, lstzenkaku)
+        
     if ioout == None:
         return iobin.getvalue()
             
